@@ -13,6 +13,9 @@
         android:theme="@style/Theme.SmartOper"
         tools:targetApi="31">
         <activity
+            android:name=".Solucion"
+            android:exported="false" />
+        <activity
             android:name=".Problema"
             android:exported="false" />
         <activity

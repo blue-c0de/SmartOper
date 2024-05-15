@@ -44,7 +44,7 @@ public class Pendiente extends Fragment {
 
         FirebaseFirestore.getInstance().collection("NORMAL").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                cargarTarjeta(linearLayout, textView, R.drawable.tarjeta_amarillo, "NORMAL", task.getResult(), Color.parseColor("#c09f51"));
+                cargarTarjeta(linearLayout, textView, R.drawable.tarjeta_amarillo, task.getResult(), Color.parseColor("#c09f51"));
             } else {
                 textoA = true;
             }
@@ -52,7 +52,7 @@ public class Pendiente extends Fragment {
 
         FirebaseFirestore.getInstance().collection("GRAVE").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                cargarTarjeta(linearLayout, textView, R.drawable.tarjeta_roja, "GRAVE", task.getResult(), Color.parseColor("#783736"));
+                cargarTarjeta(linearLayout, textView, R.drawable.tarjeta_roja, task.getResult(), Color.parseColor("#783736"));
             } else {
                 textoR = true;
             }
@@ -65,7 +65,7 @@ public class Pendiente extends Fragment {
         return root;
     }
 
-    private void cargarTarjeta(LinearLayout linearLayout, TextView textView, int diseño, String state, QuerySnapshot querySnapshot, int color){
+    private void cargarTarjeta(LinearLayout linearLayout, TextView textView, int diseño, QuerySnapshot querySnapshot, int color){
         for (QueryDocumentSnapshot document : querySnapshot) {
             textView.setVisibility(View.INVISIBLE);
 
@@ -75,13 +75,13 @@ public class Pendiente extends Fragment {
             TextView estado = tarjeta.findViewById(R.id.estado);
             TextView titulo = tarjeta.findViewById(R.id.titulo);
 
-            estado.setText(state);
+            estado.setText(document.getString("estado"));
             estado.setTextColor(color);
             titulo.setText(document.getString("titulo"));
 
             linearLayout.addView(tarjeta);
             tarjeta.setOnClickListener(v -> {
-                startActivity(new Intent(this.getContext(), Problema.class).putExtra("coleccion", state).putExtra("documento", document.getId()));
+                startActivity(new Intent(this.getContext(), Problema.class).putExtra("coleccion", document.getString("estado")).putExtra("documento", document.getId()));
             });
         }
     }

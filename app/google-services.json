@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "414489558646",
+    "project_id": "smartoper-d431a",
+    "storage_bucket": "smartoper-d431a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:414489558646:android:0529ce4e5711904e5e6957",
+        "android_client_info": {
+          "package_name": "com.example.smartoper"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCStW2KGRVr0qiqrXFHH9S1y0NvDIHTUYM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

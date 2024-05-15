@@ -12,32 +12,33 @@
         android:id="@+id/linearLayout"
         android:layout_width="270dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:background="@drawable/login_design"
+        android:orientation="vertical"
         android:padding="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="TextSizeCheck">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:textSize="32sp"
-            android:textStyle="bold"
+            android:text="Login Operador"
             android:textColor="@color/azul"
-            android:text="Login Operador"/>
+            android:textSize="32sp"
+            android:textStyle="bold" />
 
         <Space
             android:layout_width="wrap_content"
-            android:layout_height="30dp"/>
+            android:layout_height="30dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:text="Usuario"/>
+            android:text="Usuario"
+            android:textSize="18sp" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInput_usuario"
@@ -48,40 +49,44 @@
             <EditText
                 android:id="@+id/usuario"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Space
             android:layout_width="wrap_content"
-            android:layout_height="20dp"/>
+            android:layout_height="20dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:text="Contraseña"/>
+            android:text="Contraseña"
+            android:textSize="18sp" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInput_contra"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Introduce tu contraseña">
+            android:hint="Introduce tu contraseña"
+            app:passwordToggleEnabled="true">
 
             <EditText
                 android:id="@+id/contra"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:autofillHints="password"
+                android:inputType="textPassword"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <Space
             android:layout_width="wrap_content"
-            android:layout_height="30dp"/>
+            android:layout_height="30dp" />
 
         <Button
             android:id="@+id/boton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="INICIAR SESION"/>
+            android:text="INICIAR SESION" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

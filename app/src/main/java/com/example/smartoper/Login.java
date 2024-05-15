@@ -65,11 +65,13 @@ public class Login extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         DocumentSnapshot documentSnapshot = task.getResult();
                         if (documentSnapshot.exists()) {
-                            mAuth.signInWithEmailAndPassword(documentSnapshot.getString("correo"), password)
+                            String correo = documentSnapshot.getString("correo");
+                            String nombre = documentSnapshot.getString("nombre");
+                            mAuth.signInWithEmailAndPassword(correo, password)
                                     .addOnCompleteListener(this, task2 -> {
                                         if (task2.isSuccessful()) {
                                             mAuth.getCurrentUser();
-                                            startActivity(new Intent(Login.this, MainActivity.class).putExtra("user", usu));
+                                            startActivity(new Intent(Login.this, MainActivity.class).putExtra("user", nombre));
                                             finish();
                                         } else {
                                             showErrorDialog("Usuario/Contraseña Incorrecto.");

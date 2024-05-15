@@ -54,20 +54,23 @@ public class Resuelto extends Fragment {
             TextView estado = tarjeta.findViewById(R.id.estado);
             TextView titulo = tarjeta.findViewById(R.id.titulo);
 
-            estado.setText(document.getString("estado"));
-            titulo.setText(document.getString("titulo"));
+            String estadoString = document.getString("estado");
+            if (estadoString != null) {
+                estado.setText(estadoString);
+                titulo.setText(document.getString("titulo"));
 
-            if(document.getString("estado").equalsIgnoreCase("GRAVE")){
-                tarjeta.setBackgroundResource(R.drawable.tarjeta_roja);
-                estado.setTextColor(Color.parseColor("#783736"));
-            } else {
+                if(estadoString.equalsIgnoreCase("GRAVE")){
+                    tarjeta.setBackgroundResource(R.drawable.tarjeta_roja);
+                    estado.setTextColor(Color.parseColor("#783736"));
+                } else {
+                    tarjeta.setBackgroundResource(R.drawable.tarjeta_amarillo);
+                    estado.setTextColor(Color.parseColor("#c09f51"));
+                }
 
-                tarjeta.setBackgroundResource(R.drawable.tarjeta_amarillo);
-                estado.setTextColor(Color.parseColor("#c09f51"));
+                linearLayout.addView(tarjeta);
+                tarjeta.setOnClickListener(v -> startActivity(new Intent(this.getContext(), Problema.class).putExtra("origen", "resuelto").putExtra("coleccion", "resuelto").putExtra("documento", document.getId())));
             }
-
-            linearLayout.addView(tarjeta);
-            tarjeta.setOnClickListener(v -> startActivity(new Intent(this.getContext(), Problema.class).putExtra("coleccion", "resuelto").putExtra("documento", document.getId())));
         }
     }
+
 }

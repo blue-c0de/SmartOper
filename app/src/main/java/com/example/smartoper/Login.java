@@ -1,7 +1,9 @@
 package com.example.smartoper;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
@@ -22,7 +24,6 @@ public class Login extends AppCompatActivity {
     private EditText usuario, contra;
     private TextInputLayout textInputUsuario, textInputContra;
     private FirebaseAuth mAuth;
-
     private Drawable redBorderDrawable, defaultBorderDrawable;
 
     @Override
@@ -67,11 +68,17 @@ public class Login extends AppCompatActivity {
                         if (documentSnapshot.exists()) {
                             String correo = documentSnapshot.getString("correo");
                             String nombre = documentSnapshot.getString("nombre");
+
+                            SharedPreferences preferences = getSharedPreferences("ModoApp", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putString("nombre", nombre);
+                            editor.apply();
+
                             mAuth.signInWithEmailAndPassword(correo, password)
                                     .addOnCompleteListener(this, task2 -> {
                                         if (task2.isSuccessful()) {
                                             mAuth.getCurrentUser();
-                                            startActivity(new Intent(Login.this, MainActivity.class).putExtra("user", nombre));
+                                            startActivity(new Intent(Login.this, MainActivity.class));
                                             finish();
                                         } else {
                                             showErrorDialog("Usuario/Contraseña Incorrecto.");

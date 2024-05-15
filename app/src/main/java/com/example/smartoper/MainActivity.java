@@ -1,5 +1,7 @@
 package com.example.smartoper;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -22,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         ViewPager viewPager = findViewById(R.id.view_pager);
 
         // Establecer nombre
-        nom.setText(getIntent().getStringExtra("user"));
+        nom.setText(getSharedPreferences("ModoApp", Context.MODE_PRIVATE).getString("nombre", ""));
 
         // Configura adapter
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
@@ -31,4 +33,8 @@ public class MainActivity extends AppCompatActivity {
         Objects.requireNonNull(tabLayout.getTabAt(0)).setText("Pendiente");
         Objects.requireNonNull(tabLayout.getTabAt(1)).setText("Resuelto");
     }
+
+    @SuppressLint("MissingSuperCall")
+    @Override
+    public void onBackPressed() {}
 }

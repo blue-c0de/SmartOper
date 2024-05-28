@@ -1,15 +1,19 @@
 package com.example.smartoper;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -26,6 +30,9 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.firestore.v1.WriteResult;
 
 import java.text.SimpleDateFormat;
@@ -33,6 +40,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 
 public class Solucion extends AppCompatActivity {
 
@@ -42,6 +51,9 @@ public class Solucion extends AppCompatActivity {
     private WebView webView;
     private TextInputLayout inputDescripcion, inputImagen;
     private String hIni = null, hFin = null, estado = null;
+    private static final int GALLERY_REQUEST_CODE = 123;
+    private FloatingActionButton fab;
+    private Uri fileUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +68,14 @@ public class Solucion extends AppCompatActivity {
         inputDescripcion = findViewById(R.id.input_descripcion);
         inputImagen = findViewById(R.id.input_imagen);
         webView = findViewById(R.id.webView);
+
+        fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openGallery();
+            }
+        });
 
         String html = "<html><body style='margin:0; padding:0;'><img style='object-fit: contain; width:100%; height:100%;' src='" + imagen.getText().toString() + "' /></body></html>";
         webView.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null);
@@ -161,6 +181,42 @@ public class Solucion extends AppCompatActivity {
                 if (!hasFocus) {
                     edit.setBackground(defaultBorderDrawable);
                 }
+            });
+        }
+    }
+
+    private void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, GALLERY_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
+            fileUri = data.getData();
+            uploadImageToFirebaseStorage();
+        }
+    }
+
+    private void uploadImageToFirebaseStorage() {
+        if (fileUri != null) {
+            StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+            StorageReference imagesRef = storageRef.child("images/" + fileUri.getLastPathSegment());
+
+            UploadTask uploadTask = imagesRef.putFile(fileUri);
+            uploadTask.addOnSuccessListener(taskSnapshot -> {
+                imagesRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                    String imageUrl = uri.toString();
+                    webView.setWebViewClient(new WebViewClient());
+                    webView.loadUrl(imageUrl);
+                    imagen.setText(imageUrl);
+                }).addOnFailureListener(exception -> {
+                    // Error al obtener la URL de descarga
+                });
+            }).addOnFailureListener(exception -> {
+                // Error al subir la imagen
             });
         }
     }

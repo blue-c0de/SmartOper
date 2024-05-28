@@ -1,12 +1,8 @@
 package com.example.smartoper;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +10,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.firebase.Firebase;
+import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 public class Pendiente extends Fragment {
 
+    SwipeRefreshLayout swipeRefreshLayout;
     Boolean textoR = false;
     Boolean textoA = false;
 
@@ -29,18 +28,26 @@ public class Pendiente extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {   
+                             Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_pendiente, container, false);
 
         LinearLayout linearLayout = root.findViewById(R.id.linear);
         TextView textView = root.findViewById(R.id.textView);
+        swipeRefreshLayout = root.findViewById(R.id.swipe_refresh_layout);
 
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            loadData(linearLayout, textView);
+        });
+
+        // Load data initially
+        loadData(linearLayout, textView);
+
+        return root;
+    }
+
+    private void loadData(LinearLayout linearLayout, TextView textView) {
+        linearLayout.removeAllViews();
 
         FirebaseFirestore.getInstance().collection("NORMAL").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -58,18 +65,19 @@ public class Pendiente extends Fragment {
             }
         });
 
-        if (textoR && textoA){
+        if (textoR && textoA) {
             textView.setVisibility(View.VISIBLE);
         }
 
-        return root;
+        // After data loading is complete, hide the refreshing indicator
+        swipeRefreshLayout.setRefreshing(false);
     }
 
-    private void cargarTarjeta(LinearLayout linearLayout, TextView textView, int diseño, QuerySnapshot querySnapshot, int color){
+    private void cargarTarjeta(LinearLayout linearLayout, TextView textView, int diseño, QuerySnapshot querySnapshot, int color) {
         for (QueryDocumentSnapshot document : querySnapshot) {
             textView.setVisibility(View.INVISIBLE);
 
-            View tarjeta = LayoutInflater.from(this.getContext()).inflate(R.layout.tarjeta, null);
+            View tarjeta = LayoutInflater.from(requireContext()).inflate(R.layout.tarjeta, null);
             tarjeta.setBackgroundResource(diseño);
 
             TextView estado = tarjeta.findViewById(R.id.estado);
@@ -81,7 +89,7 @@ public class Pendiente extends Fragment {
 
             linearLayout.addView(tarjeta);
             tarjeta.setOnClickListener(v -> {
-                startActivity(new Intent(this.getContext(), Problema.class).putExtra("coleccion", document.getString("estado")).putExtra("documento", document.getId()));
+                startActivity(new Intent(requireContext(), Problema.class).putExtra("coleccion", document.getString("estado")).putExtra("documento", document.getId()));
             });
         }
     }

@@ -7,6 +7,11 @@ import android.widget.ImageView;
 import android.animation.ObjectAnimator;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class Splash extends AppCompatActivity {
 
     @Override
@@ -15,6 +20,13 @@ public class Splash extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         ImageView logo = findViewById(R.id.imageView);
+
+        // FIREBASE OPERARIO ACTIVO
+        Map<String, Object> operario = new HashMap<>();
+        operario.put("existe", false);
+        operario.put("latitude", 0);
+        operario.put("longitude", 0);
+        FirebaseFirestore.getInstance().collection("ubicaciones").document("dispositivo1").set(operario);
 
         // Crear animaciones para el escalado en X y en Y
         ObjectAnimator scaleX = ObjectAnimator.ofFloat(logo, "scaleX", 0.1f, 1.0f);

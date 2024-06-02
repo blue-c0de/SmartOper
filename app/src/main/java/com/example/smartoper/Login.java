@@ -72,6 +72,7 @@ public class Login extends AppCompatActivity {
                             SharedPreferences preferences = getSharedPreferences("ModoApp", Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = preferences.edit();
                             editor.putString("nombre", nombre);
+                            editor.putString("operario", usu);
                             editor.apply();
 
                             mAuth.signInWithEmailAndPassword(correo, password)

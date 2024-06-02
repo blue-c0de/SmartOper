@@ -1,5 +1,6 @@
 package com.example.smartoper;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 public class Resuelto extends Fragment {
 
     SwipeRefreshLayout swipeRefreshLayout;
+    Boolean mostrar = true;
 
     public Resuelto() {
         // Required empty public constructor
@@ -50,8 +52,7 @@ public class Resuelto extends Fragment {
 
         FirebaseFirestore.getInstance().collection("resuelto").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                textView.setVisibility(View.INVISIBLE);
-                cargarTarjeta(linearLayout, task.getResult());
+                cargarTarjeta(linearLayout, task.getResult(), textView);
             } else {
                 textView.setVisibility(View.VISIBLE);
             }
@@ -61,28 +62,39 @@ public class Resuelto extends Fragment {
         });
     }
 
-    private void cargarTarjeta(LinearLayout linearLayout, QuerySnapshot querySnapshot) {
+    private void cargarTarjeta(LinearLayout linearLayout, QuerySnapshot querySnapshot, TextView textView) {
         for (QueryDocumentSnapshot document : querySnapshot) {
             View tarjeta = LayoutInflater.from(requireContext()).inflate(R.layout.tarjeta, null);
             TextView estado = tarjeta.findViewById(R.id.estado);
             TextView titulo = tarjeta.findViewById(R.id.titulo);
 
-            String estadoString = document.getString("estado");
-            if (estadoString != null) {
-                estado.setText(estadoString);
-                titulo.setText(document.getString("titulo"));
+            String operario = document.getString("operario");
+            String sharedOperario = requireContext().getSharedPreferences("ModoApp", Context.MODE_PRIVATE).getString("operario", "");
 
-                if (estadoString.equalsIgnoreCase("GRAVE")) {
-                    tarjeta.setBackgroundResource(R.drawable.tarjeta_roja);
-                    estado.setTextColor(Color.parseColor("#783736"));
-                } else {
-                    tarjeta.setBackgroundResource(R.drawable.tarjeta_amarillo);
-                    estado.setTextColor(Color.parseColor("#c09f51"));
+            if (operario != null && operario.equals(sharedOperario)){
+                String estadoString = document.getString("estado");
+                if (estadoString != null) {
+                    mostrar = false;
+                    estado.setText(estadoString);
+                    titulo.setText(document.getString("titulo"));
+
+                    if (estadoString.equalsIgnoreCase("GRAVE")) {
+                        tarjeta.setBackgroundResource(R.drawable.tarjeta_roja);
+                        estado.setTextColor(Color.parseColor("#783736"));
+                    } else {
+                        tarjeta.setBackgroundResource(R.drawable.tarjeta_amarillo);
+                        estado.setTextColor(Color.parseColor("#c09f51"));
+                    }
+
+                    textView.setVisibility(View.INVISIBLE);
+                    linearLayout.addView(tarjeta);
+                    tarjeta.setOnClickListener(v -> startActivity(new Intent(requireContext(), Problema.class).putExtra("origen", "resuelto").putExtra("coleccion", "resuelto").putExtra("documento", document.getId())));
                 }
-
-                linearLayout.addView(tarjeta);
-                tarjeta.setOnClickListener(v -> startActivity(new Intent(requireContext(), Problema.class).putExtra("origen", "resuelto").putExtra("coleccion", "resuelto").putExtra("documento", document.getId())));
+            } else {
+                if (mostrar)
+                    textView.setVisibility(View.VISIBLE);
             }
         }
     }
+
 }

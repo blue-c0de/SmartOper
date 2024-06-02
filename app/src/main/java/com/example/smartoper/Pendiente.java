@@ -1,5 +1,6 @@
 package com.example.smartoper;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -83,14 +85,21 @@ public class Pendiente extends Fragment {
             TextView estado = tarjeta.findViewById(R.id.estado);
             TextView titulo = tarjeta.findViewById(R.id.titulo);
 
-            estado.setText(document.getString("estado"));
-            estado.setTextColor(color);
-            titulo.setText(document.getString("titulo"));
+            String operario = document.getString("operario");
+            String sharedOperario = requireContext().getSharedPreferences("ModoApp", Context.MODE_PRIVATE).getString("operario", "");
 
-            linearLayout.addView(tarjeta);
-            tarjeta.setOnClickListener(v -> {
-                startActivity(new Intent(requireContext(), Problema.class).putExtra("coleccion", document.getString("estado")).putExtra("documento", document.getId()));
-            });
+            if (operario != null && operario.equals(sharedOperario)){
+                estado.setText(document.getString("estado"));
+                estado.setTextColor(color);
+                titulo.setText(document.getString("titulo"));
+
+                linearLayout.addView(tarjeta);
+                tarjeta.setOnClickListener(v -> {
+                    startActivity(new Intent(requireContext(), Problema.class).putExtra("coleccion", document.getString("estado")).putExtra("documento", document.getId()));
+                });
+            } else {
+                textView.setVisibility(View.VISIBLE);
+            }
         }
     }
 }

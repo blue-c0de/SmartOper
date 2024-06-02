@@ -3,9 +3,11 @@ package com.example.smartoper;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +19,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
@@ -34,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
         TextView nom = findViewById(R.id.nombre);
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         ViewPager viewPager = findViewById(R.id.view_pager);
+        ImageView cerrar = findViewById(R.id.cerrar);
+
+        cerrar.setOnClickListener(view -> cerrarSesion());
 
         // FIREBASE OPERARIO ACTIVO
         Map<String, Object> operario = new HashMap<>();
@@ -51,6 +57,15 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
         Objects.requireNonNull(tabLayout.getTabAt(0)).setText("Pendiente");
         Objects.requireNonNull(tabLayout.getTabAt(1)).setText("Resuelto");
+    }
+
+    private void cerrarSesion() {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mAuth.signOut();
+
+        startActivity(new Intent(this, Login.class));
+
+        this.finish();
     }
 
     @SuppressLint("MissingSuperCall")

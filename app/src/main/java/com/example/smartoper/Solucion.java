@@ -134,6 +134,7 @@ public class Solucion extends AppCompatActivity {
                 datos.put("descripcion", descripcionValue);
                 datos.put("imagen", img);
                 datos.put("solucion", desc);
+                datos.put("operario", getSharedPreferences("ModoApp", Context.MODE_PRIVATE).getString("operario", ""));
                 datos.put("horaIni", hIni);
                 datos.put("horaFin", hFin);
                 FirebaseFirestore.getInstance().collection("resuelto").document().set(datos);

@@ -35,19 +35,16 @@ public class Resuelto extends Fragment {
         TextView textView = root.findViewById(R.id.textView);
         swipeRefreshLayout = root.findViewById(R.id.swipe_refresh_layout);
 
-        // Set refresh listener
         swipeRefreshLayout.setOnRefreshListener(() -> {
             loadData(linearLayout, textView);
         });
 
-        // Load data initially
         loadData(linearLayout, textView);
 
         return root;
     }
 
     private void loadData(LinearLayout linearLayout, TextView textView) {
-        // Clear existing data
         linearLayout.removeAllViews();
 
         FirebaseFirestore.getInstance().collection("resuelto").get().addOnCompleteListener(task -> {
@@ -57,7 +54,6 @@ public class Resuelto extends Fragment {
                 textView.setVisibility(View.VISIBLE);
             }
 
-            // After data loading is complete, hide the refreshing indicator
             swipeRefreshLayout.setRefreshing(false);
         });
     }

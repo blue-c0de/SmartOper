@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,29 +17,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.google.firestore.v1.WriteResult;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 
 public class Solucion extends AppCompatActivity {
@@ -49,10 +40,9 @@ public class Solucion extends AppCompatActivity {
     private Drawable redBorderDrawable, defaultBorderDrawable;
     private EditText descripcion, imagen;
     private WebView webView;
-    private TextInputLayout inputDescripcion, inputImagen;
+    private TextInputLayout inputImagen;
     private String hIni = null, hFin = null, estado = null;
     private static final int GALLERY_REQUEST_CODE = 123;
-    private FloatingActionButton fab;
     private Uri fileUri;
 
     @Override
@@ -65,17 +55,11 @@ public class Solucion extends AppCompatActivity {
 
         descripcion = findViewById(R.id.descripcion);
         imagen = findViewById(R.id.imagen);
-        inputDescripcion = findViewById(R.id.input_descripcion);
         inputImagen = findViewById(R.id.input_imagen);
         webView = findViewById(R.id.webView);
 
-        fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openGallery();
-            }
-        });
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(view -> openGallery());
 
         String html = "<html><body style='margin:0; padding:0;'><img style='object-fit: contain; width:100%; height:100%;' src='" + imagen.getText().toString() + "' /></body></html>";
         webView.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null);
@@ -151,25 +135,22 @@ public class Solucion extends AppCompatActivity {
     }
 
     private void configurarBoton(final Button boton, final TextView hora) {
-        boton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                String currentDateAndTime = sdf.format(new Date());
+        boton.setOnClickListener(v -> {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            String currentDateAndTime = sdf.format(new Date());
 
-                // Asigna la hora actual al TextView correspondiente
-                hora.setText(currentDateAndTime);
+            // Asigna la hora actual al TextView correspondiente
+            hora.setText(currentDateAndTime);
 
-                // Deshabilita y oculta el botón
-                boton.setEnabled(false);
-                boton.setVisibility(View.INVISIBLE);
+            // Deshabilita y oculta el botón
+            boton.setEnabled(false);
+            boton.setVisibility(View.INVISIBLE);
 
-                // Determina si es el botón de inicio o de fin y asigna la hora correspondiente
-                if (boton.getId() == R.id.botonIni) {
-                    hIni = currentDateAndTime;
-                } else if (boton.getId() == R.id.botonFin) {
-                    hFin = currentDateAndTime;
-                }
+            // Determina si es el botón de inicio o de fin y asigna la hora correspondiente
+            if (boton.getId() == R.id.botonIni) {
+                hIni = currentDateAndTime;
+            } else if (boton.getId() == R.id.botonFin) {
+                hFin = currentDateAndTime;
             }
         });
     }
@@ -207,16 +188,14 @@ public class Solucion extends AppCompatActivity {
             StorageReference imagesRef = storageRef.child("images/" + fileUri.getLastPathSegment());
 
             UploadTask uploadTask = imagesRef.putFile(fileUri);
-            uploadTask.addOnSuccessListener(taskSnapshot -> {
-                imagesRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                    String imageUrl = uri.toString();
-                    webView.setWebViewClient(new WebViewClient());
-                    webView.loadUrl(imageUrl);
-                    imagen.setText(imageUrl);
-                }).addOnFailureListener(exception -> {
-                    // Error al obtener la URL de descarga
-                });
+            uploadTask.addOnSuccessListener(taskSnapshot -> imagesRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                String imageUrl = uri.toString();
+                webView.setWebViewClient(new WebViewClient());
+                webView.loadUrl(imageUrl);
+                imagen.setText(imageUrl);
             }).addOnFailureListener(exception -> {
+                // Error al obtener la URL de descarga
+            })).addOnFailureListener(exception -> {
                 // Error al subir la imagen
             });
         }

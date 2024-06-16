@@ -7,14 +7,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -24,6 +22,7 @@ public class Pendiente extends Fragment {
     SwipeRefreshLayout swipeRefreshLayout;
     Boolean textoR = false;
     Boolean textoA = false;
+    Boolean mostrar = true;
 
     public Pendiente() {
         // Required empty public constructor
@@ -38,9 +37,7 @@ public class Pendiente extends Fragment {
         TextView textView = root.findViewById(R.id.textView);
         swipeRefreshLayout = root.findViewById(R.id.swipe_refresh_layout);
 
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            loadData(linearLayout, textView);
-        });
+        swipeRefreshLayout.setOnRefreshListener(() -> loadData(linearLayout, textView));
 
         // Load data initially
         loadData(linearLayout, textView);
@@ -89,16 +86,16 @@ public class Pendiente extends Fragment {
             String sharedOperario = requireContext().getSharedPreferences("ModoApp", Context.MODE_PRIVATE).getString("operario", "");
 
             if (operario != null && operario.equals(sharedOperario)){
+                mostrar = false;
                 estado.setText(document.getString("estado"));
                 estado.setTextColor(color);
                 titulo.setText(document.getString("titulo"));
 
                 linearLayout.addView(tarjeta);
-                tarjeta.setOnClickListener(v -> {
-                    startActivity(new Intent(requireContext(), Problema.class).putExtra("coleccion", document.getString("estado")).putExtra("documento", document.getId()));
-                });
+                tarjeta.setOnClickListener(v -> startActivity(new Intent(requireContext(), Problema.class).putExtra("coleccion", document.getString("estado")).putExtra("documento", document.getId())));
             } else {
-                textView.setVisibility(View.VISIBLE);
+                if (mostrar)
+                    textView.setVisibility(View.VISIBLE);
             }
         }
     }
